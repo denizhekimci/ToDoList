@@ -7,6 +7,7 @@
 #include <QtCore>
 #include <QTreeWidget>
 
+
 namespace Ui {
 class MainWindow;
 }
@@ -18,7 +19,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QVector<QString> data;
+    QVector<Item> data;
     void AddRoot(QString item);
     void AddChild(QTreeWidgetItem *parent,QString item);
 

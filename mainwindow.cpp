@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QMessageBox>
+#include <QVector>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,11 +31,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-
-//    Item item;
-
-//    item.setDescription(ui->lineEdit->text());
-    data.push_back(ui->lineEdit->text());
+    data.append(ui->lineEdit->text());
     ui->treeWidget->setColumnCount(1);
-    AddRoot(data.at(0));
+    AddRoot(data.last());
 }
