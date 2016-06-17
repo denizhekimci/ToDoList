@@ -84,13 +84,12 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QTreeView" name="treeView">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
+      <widget class="QTreeWidget" name="treeWidget">
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
       </widget>
      </item>
      <item>
@@ -112,7 +111,13 @@
       </layout>
      </item>
      <item>
-      <widget class="QTreeView" name="treeView_2"/>
+      <widget class="QTreeWidget" name="treeWidget_2">
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
      </item>
     </layout>
    </widget>

@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <item.h>
+#include <QtGui>
+#include <QtCore>
+#include <QTreeWidget>
 
 namespace Ui {
 class MainWindow;
@@ -15,6 +19,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QVector<QString> data;
+    void AddRoot(QString item);
+    void AddChild(QTreeWidgetItem *parent,QString item);
 
 private slots:
     void on_pushButton_clicked();
