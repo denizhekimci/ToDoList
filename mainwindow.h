@@ -45,6 +45,10 @@ private slots:
 
     void on_sortAddDate_clicked();
 
+    void on_markAsUndone_clicked();
+
+    void on_delFinished_clicked();
+
 private:
     Ui::MainWindow *ui;
     QStandardItemModel *toDoModel;

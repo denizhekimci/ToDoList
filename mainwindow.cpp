@@ -17,9 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QStringList list;
-    list << "Task: " << "Completion date:" << "Date added: ";
+    list << "Task " << "Completion date" << "Date added ";
     toDoModel->setHorizontalHeaderLabels(list);
     doneModel->setHorizontalHeaderLabels(list);
+    ui->toDoTreeView->header()->resizeSection(0,300);
+    ui->doneTreeView->header()->resizeSection(0,300);
+    ui->dateEdit->setDate(QDate::currentDate());
 }
 
 MainWindow::~MainWindow()
@@ -37,7 +40,7 @@ void MainWindow::on_addTask_clicked()
     ui->toDoTreeView->setCurrentIndex(index);
 
     toDoModel->setData(index, ui->dateEdit->date());
-    toDoModel->setData( toDoModel->index(row,2), QDate::currentDate());
+    toDoModel->setData(toDoModel->index(row,2), QDate::currentDate());
 }
 
 void MainWindow::on_deleteTask_clicked()
@@ -45,28 +48,10 @@ void MainWindow::on_deleteTask_clicked()
     toDoModel->removeRows(ui->toDoTreeView->currentIndex().row(),1);
 }
 
-//void MainWindow::on_markAsUndone_clicked()
-//{
-//    QTreeWidgetItem *itm = ui->treeWidget_2->currentItem();
-
-//    if(itm != NULL)
-//    {
-//        int i = ui->treeWidget_2->indexOfTopLevelItem(itm);
-
-//        toDoList.append(doneList.at(i));
-
-//        ui->treeWidget_2->takeTopLevelItem(i);
-//        ui->treeWidget->addTopLevelItem(itm);
-
-//        doneList.removeAt(i);
-//    }
-//}
-
-
-//void MainWindow::on_delFinished_clicked()
-//{
-//    RemoveRoot(ui->treeWidget_2,doneList);
-//}
+void MainWindow::on_delFinished_clicked()
+{
+    doneModel->removeRows(ui->doneTreeView->currentIndex().row(),1);
+}
 
 void MainWindow::on_sortAlpha_clicked()
 {
@@ -76,9 +61,22 @@ void MainWindow::on_sortAlpha_clicked()
 
 void MainWindow::on_markAsDone_clicked()
 {
-    int row = toDoModel->rowCount();
-    doneModel->insertRow(ui->doneTreeView->currentIndex().row());
-    toDoModel->removeRow( ui->toDoTreeView->currentIndex().row());
+    QList<QStandardItem*> itemList = toDoModel->takeRow(ui->toDoTreeView->currentIndex().row());
+    if(!itemList.isEmpty())
+    {
+        doneModel->appendRow(itemList);
+        ui->doneTreeView->setModel(doneModel);
+    }
+}
+
+void MainWindow::on_markAsUndone_clicked()
+{
+    QList<QStandardItem*> itemList = doneModel->takeRow(ui->doneTreeView->currentIndex().row());
+    if(!itemList.isEmpty())
+    {
+        toDoModel->appendRow(itemList);
+        ui->toDoTreeView->setModel(toDoModel);
+    }
 }
 
 void MainWindow::on_sortEndDate_clicked()
@@ -90,3 +88,6 @@ void MainWindow::on_sortAddDate_clicked()
 {
     toDoModel->sort(2, Qt::AscendingOrder);
 }
+
+
+
