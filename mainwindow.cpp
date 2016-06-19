@@ -4,47 +4,22 @@
 #include <QtGui>
 #include <QMessageBox>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    toDoModel = new QStandardItemModel(0,3,this);
+    ui->toDoTreeView->setModel(toDoModel);
+    doneModel = new QStandardItemModel(0,3,this);
+    ui->doneTreeView->setModel(doneModel);
 
-}
-void MainWindow::AddRoot(Item item)
-{
-    QTreeWidgetItem *itm = new QTreeWidgetItem(ui->treeWidget);
-    itm->setText(0,item.getDescription());
-    ui->treeWidget->addTopLevelItem(itm);
-    AddChild(itm, item);
-}
 
-void MainWindow::RemoveRoot()
-{
-    QTreeWidgetItem *itm = ui->treeWidget->currentItem();
-    if(itm){
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "", "Are you sure you want to delete the item?", QMessageBox::Yes | QMessageBox::No);
-        if(reply == QMessageBox::Yes)
-        {
-            int i = ui->treeWidget->indexOfTopLevelItem(itm);
-            ui->treeWidget->takeTopLevelItem(i);
-            delete itm;
-            toDoList.removeAt(i);
-        }
-    }
-}
-
-void MainWindow::AddChild(QTreeWidgetItem *parent,Item item)
-{
-    QTreeWidgetItem *itm = new QTreeWidgetItem();
-    itm->setText(0,item.getEndDate().toString());
-    parent->addChild(itm);
-}
-
-void MainWindow::moveTask(QTreeWidget *widget1, QTreeWidget *widget2, QList<Item> list1, QList<Item> list2)
-{
-
+    QStringList list;
+    list << "Task: " << "Completion date:" << "Date added: ";
+    toDoModel->setHorizontalHeaderLabels(list);
+    doneModel->setHorizontalHeaderLabels(list);
 }
 
 MainWindow::~MainWindow()
@@ -52,48 +27,66 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_clicked()
+
+void MainWindow::on_addTask_clicked()
 {
-    Item item;
-    item.setDescription(ui->lineEdit->text());
-    item.setEndDate(ui->dateEdit->date());
-    toDoList.append(item);
-    ui->treeWidget->setColumnCount(1);
-    AddRoot(toDoList.last());
+    int row = toDoModel->rowCount();
+    toDoModel->insertRows(row,1);
+
+    QModelIndex index = toDoModel->index(row,1);
+    ui->toDoTreeView->setCurrentIndex(index);
+
+    toDoModel->setData(index, ui->dateEdit->date());
+    toDoModel->setData( toDoModel->index(row,2), QDate::currentDate());
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_deleteTask_clicked()
 {
-    RemoveRoot();
+    toDoModel->removeRows(ui->toDoTreeView->currentIndex().row(),1);
+}
+
+//void MainWindow::on_markAsUndone_clicked()
+//{
+//    QTreeWidgetItem *itm = ui->treeWidget_2->currentItem();
+
+//    if(itm != NULL)
+//    {
+//        int i = ui->treeWidget_2->indexOfTopLevelItem(itm);
+
+//        toDoList.append(doneList.at(i));
+
+//        ui->treeWidget_2->takeTopLevelItem(i);
+//        ui->treeWidget->addTopLevelItem(itm);
+
+//        doneList.removeAt(i);
+//    }
+//}
+
+
+//void MainWindow::on_delFinished_clicked()
+//{
+//    RemoveRoot(ui->treeWidget_2,doneList);
+//}
+
+void MainWindow::on_sortAlpha_clicked()
+{
+    toDoModel->sort(0,Qt::AscendingOrder);
 
 }
 
-
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_markAsDone_clicked()
 {
-    QTreeWidgetItem *itm = ui->treeWidget->currentItem();
-
-    if(itm != NULL)
-    {
-        int i = ui->treeWidget->indexOfTopLevelItem(itm);
-        ui->treeWidget->takeTopLevelItem(i);
-        ui->treeWidget_2->addTopLevelItem(itm);
-
-        toDoList.removeAt(i);
-    }
-
+    int row = toDoModel->rowCount();
+    doneModel->insertRow(ui->doneTreeView->currentIndex().row());
+    toDoModel->removeRow( ui->toDoTreeView->currentIndex().row());
 }
 
-void MainWindow::on_pushButton_4_clicked()
+void MainWindow::on_sortEndDate_clicked()
 {
-    QTreeWidgetItem *itm = ui->treeWidget_2->currentItem();
+    toDoModel->sort(1, Qt::AscendingOrder);
+}
 
-    if(itm != NULL)
-    {
-        int i = ui->treeWidget_2->indexOfTopLevelItem(itm);
-        ui->treeWidget_2->takeTopLevelItem(i);
-        ui->treeWidget->addTopLevelItem(itm);
-
-        doneList.removeAt(i);
-    }
+void MainWindow::on_sortAddDate_clicked()
+{
+    toDoModel->sort(2, Qt::AscendingOrder);
 }
