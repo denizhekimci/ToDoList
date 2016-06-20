@@ -17,12 +17,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void readJson();
+    void read(const QJsonObject &json);
+    void write() ;
 
-//    void AddRoot(Item item);
-//    void AddChild(QTreeWidgetItem *parent,Item item);
-//    void RemoveRoot(QTreeWidget *treeWidget, QList<Item> list);
-
-//    void MainWindow::moveTask(QTreeWidget *widget1, QTreeWidget *widget2, QList<Item> list1, QList<Item> list2);
+    QJsonArray openJsonFile();
 
 private slots:
     void on_addTask_clicked();
@@ -31,15 +30,7 @@ private slots:
 
     void on_markAsDone_clicked();
 
-//    void on_markAsUndone_clicked();
-
-//    void on_delFinished_clicked();
-
-//    void on_pushButton_clicked();
-
     void on_sortAlpha_clicked();
-
-
 
     void on_sortEndDate_clicked();
 
@@ -49,10 +40,22 @@ private slots:
 
     void on_delFinished_clicked();
 
+    void on_comboBox_activated(const QString &arg1);
+
+    void on_sortPrior_clicked();
+
+    void on_filterTask_clicked();
+
+    void on_saveTasks_clicked();
+
 private:
     Ui::MainWindow *ui;
     QStandardItemModel *toDoModel;
     QStandardItemModel *doneModel;
+    QSortFilterProxyModel *proxyModel;
+
+    QDate minDate;
+    QDate maxDate;
 };
 
 #endif // MAINWINDOW_H

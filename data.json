@@ -1,0 +1,14 @@
+{
+    "tasks": [
+        {
+            "addDate": "20.06.2016",
+            "completionDate": "21.06.2016",
+            "task": "Test1"
+        },
+        {
+            "addDate": "20.06.2016",
+            "completionDate": "21.06.2016",
+            "task": "Test2"
+        }
+    ]
+}
