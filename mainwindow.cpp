@@ -18,11 +18,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QStringList list;
-    list << "Task " << "Completion date" << "Date added "<<"Priority";
+    list << "Task " << "Completion date" << "Date added "<< "Priority";
     toDoModel->setHorizontalHeaderLabels(list);
     doneModel->setHorizontalHeaderLabels(list);
     ui->toDoTreeView->header()->resizeSection(0,200);
     ui->doneTreeView->header()->resizeSection(0,200);
+    ui->dateEdit->setDate(QDate::currentDate());
 
     proxyModel = new QSortFilterProxyModel(this);
 
@@ -153,6 +154,11 @@ void MainWindow::read(const QJsonObject &json)
     QJsonValue subobj3 = json["addDate"];
     toDoModel->setData(index, QDate::fromString(subobj3.toString(), "d.M.yyyy"));
 
+    index = toDoModel->index(row,3);
+    ui->toDoTreeView->setCurrentIndex(index);
+    QJsonValue subobj4 = json["priority"];
+    toDoModel->setData(index, subobj4.toString());
+
 }
 
 
@@ -162,36 +168,40 @@ void MainWindow::write()
     File.open(QIODevice::ReadOnly | QIODevice::Text);
 
     QJsonParseError JsonParseError;
-    QJsonDocument JsonDocument = QJsonDocument::fromJson(File.readAll(), &JsonParseError);
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(File.readAll(), &JsonParseError);
 
     File.close();
 
-    QJsonObject RootObject = JsonDocument.object();
-    QJsonArray Array = RootObject.value("tasks").toArray();
+    QJsonObject rootObject = jsonDocument.object();
+    QJsonArray array = rootObject.value("tasks").toArray();
 
-    QJsonObject ElementOneObject = Array.at(0).toObject();
+    QJsonObject obj = array.at(0).toObject();
 
     int row = ui->toDoTreeView->currentIndex().row();
 
     QModelIndex index = toDoModel->index(row,0);
     QJsonValue val1 = QJsonValue(toDoModel->data(index).toString());
-    ElementOneObject.insert("task", val1);
+    obj.insert("task", val1);
 
     index = toDoModel->index(row,1);
     QJsonValue val2 = QJsonValue(toDoModel->data(index).toString());
+    obj.insert("completionDate", val2);
 
-    ElementOneObject.insert("completionDate", val2);
 
     index = toDoModel->index(row,2);
     QJsonValue val3 = QJsonValue(toDoModel->data(index).toString());
-    ElementOneObject.insert("addDate", val3);
+    obj.insert("addDate", val3);
 
-    Array.insert(Array.size(), ElementOneObject);
-    RootObject.insert("tasks", Array);
-    JsonDocument.setObject(RootObject);
+    index = toDoModel->index(row,3);
+    QJsonValue val4 = QJsonValue(toDoModel->data(index).toString());
+    obj.insert("priority", val4);
+
+    array.insert(array.size(), obj);
+    rootObject.insert("tasks", array);
+    jsonDocument.setObject(rootObject);
 
     File.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
-    File.write(JsonDocument.toJson());
+    File.write(jsonDocument.toJson());
     File.close();
 }
 
